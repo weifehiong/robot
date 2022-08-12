@@ -1,8 +1,10 @@
 # Template: Standard Robot Framework
 Run method
-'''
+
+```
 rcc run -e env.json
-'''
+```
+
 Want to get started using [Robot Framework](https://robocorp.com/docs/languages-and-frameworks/robot-framework/basics) this is the simplest template to start from.
 
 This template robot:
