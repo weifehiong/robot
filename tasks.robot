@@ -15,12 +15,13 @@ Library             RPA.Robocorp.Vault
 Library             String
 Library             RPA.FileSystem
 Library             RPA.Archive
+Library             RPA.Dialogs
 # Library    OperatingSystem
 
 
 *** Variables ***
 ${web_url}                      https://robotsparebinindustries.com/#/robot-order
-${csv_url}                      https://robotsparebinindustries.com/orders.csv
+# ${csv_url}    https://robotsparebinindustries.com/orders.csv
 ${csv_path}                     orders.csv
 
 ${locator_robot_preview}        xpath://*[@id="robot-preview-image"]
@@ -44,6 +45,9 @@ ${locator_submit_error}         xpath:/html/body/div/div/div[1]/div/div[1]/div
 #    Log To Console    ${OUTPUT_DIR}${/}screenshot
 
 # Set Screenshot Directory    ${OUTPUT_DIR}${/}output${/}screenshot
+# Collect url of order from user
+#    ${url}    Collect url of order from user
+#    Log To Console    ${url}
 
 Order robots from RobotSpareBin Industries Inc
     Open the robot order website
@@ -96,8 +100,16 @@ Close the annoying modal
     # Click Button When Visible    xpath://*[@id="root"]/div/div[2]/div/div/div/div/div/button[1]
     Click Element If Visible    xpath://*[@id="root"]/div/div[2]/div/div/div/div/div/button[1]
 
+Collect url of order from user
+    [Documentation]    获取用户输入的下载订单链接
+    Add text input    URL_of_Order    label=The url to requesting order
+    ${url_response}    Run dialog
+    RETURN    ${url_response.URL_of_Order}
+
 Get orders
     [Documentation]    Download csv file through Download method of http Library
+    # https://robotsparebinindustries.com/orders.csv
+    ${csv_url}    Collect url of order from user
     Download    ${csv_url}    ${csv_path}    overwrite=True
     ${orders}    Read table from CSV    ${csv_path}    header=True
     ${rows_orders}    Get Length    ${orders}
@@ -135,6 +147,15 @@ Submit the order
         Click Element    xpath://*[@id="order"]
         ${contain_receipt}    Does Page Contain Element    ${locator_receipt}
     END
+
+    # 案例中用的是    Wait Until Keyword Succeeds
+    #    Wait Until Keyword Succeeds    retry    retry_interval    name
+    #    Examples:
+
+    # Wait Until Keyword Succeeds    2 min    5 sec    My keyword    argument
+    # ${result} =    Wait Until Keyword Succeeds    3x    200ms    My keyword
+    # ${result} =    Wait Until Keyword Succeeds    3x    strict: 200ms    My keyword
+
     # IF    ${count_errInfo}==${True}    Retry submit    ELSE    Skip
     # WHILE    ${count_errInfo}
     #    Retry submit
